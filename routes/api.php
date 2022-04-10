@@ -14,10 +14,14 @@ use Carbon\Carbon;
 |
 */
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
 
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    Route::apiResource('cars', CarController::class, ['except' => ['update']]);
+    Route::apiResource('trips', TripController::class, ['except' => ['update', 'show', 'delete']]);
+});
 
 //////////////////////////////////////////////////////////////////////////
 /// Mock Endpoints To Be Replaced With RESTful API.
@@ -29,7 +33,7 @@ Route::get('/user', function (Request $request) {
 
 // Mock endpoint to get all cars for the logged in user
 
-Route::get('/mock-get-cars', function(Request $request) {
+Route::get('/mock-get-cars', function (Request $request) {
     return [
         'data' => [
             [
@@ -58,12 +62,12 @@ Route::get('/mock-get-cars', function(Request $request) {
             ]
         ]
     ];
-})->middleware('auth:api');
+});
 
 
 // Mock endpoint to add a new car.
 
-Route::post('mock-add-car', function(Request $request) {
+Route::post('mock-add-car', function (Request $request) {
     $request->validate([
         'year' => 'required|integer',
         'make' => 'required|string',
@@ -74,7 +78,7 @@ Route::post('mock-add-car', function(Request $request) {
 
 // Mock endpoint to get a car with the given id
 
-Route::get('/mock-get-car/{id}', function(Request $request) {
+Route::get('/mock-get-car/{id}', function (Request $request) {
     return  [
         'data' => [
             'id' => 1,
@@ -90,13 +94,13 @@ Route::get('/mock-get-car/{id}', function(Request $request) {
 
 // Mock endpoint to delete a car with a given id
 
-Route::delete('mock-delete-car/{id}', function(Request $request) {
+Route::delete('mock-delete-car/{id}', function (Request $request) {
 })->middleware('auth:api');
 
 
 // Mock endpoint to get the trips for the logged in user
 
-Route::get('/mock-get-trips', function(Request $request) {
+Route::get('/mock-get-trips', function (Request $request) {
     return [
         'data' => [
             [
@@ -166,7 +170,7 @@ Route::get('/mock-get-trips', function(Request $request) {
 
 // Mock endpoint to add a new trip.
 
-Route::post('mock-add-trip', function(Request $request) {
+Route::post('mock-add-trip', function (Request $request) {
     $request->validate([
         'date' => 'required|date', // ISO 8601 string
         'car_id' => 'required|integer',
